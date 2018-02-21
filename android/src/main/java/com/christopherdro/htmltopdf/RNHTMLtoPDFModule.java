@@ -98,11 +98,13 @@ public class RNHTMLtoPDFModule extends ReactContextBaseJavaModule {
   }
 
   private String convertToPDF(String htmlString, File file) throws Exception {
+    InputStream in = null;
+    OutputStream out = null;
     try {
       Document doc = new Document();
-      InputStream in = new ByteArrayInputStream(htmlString.getBytes());
-
-      PdfWriter pdf = PdfWriter.getInstance(doc, new FileOutputStream(file));
+      in = new ByteArrayInputStream(htmlString.getBytes());
+      out = new FileOutputStream(file);
+      PdfWriter pdf = PdfWriter.getInstance(doc, out);
 
       FontFactory.setFontImp(fontProvider);
       for (String font : customFonts) {
@@ -119,6 +121,21 @@ public class RNHTMLtoPDFModule extends ReactContextBaseJavaModule {
       return absolutePath;
     } catch (Exception e) {
       throw new Exception(e);
+    }finally {
+      if(in != null){
+        try {
+          in.close();
+        }catch (Exception e){
+          e.printStackTrace();
+        }
+      }
+      if(out != null){
+        try {
+          out.close();
+        }catch (Exception e){
+          e.printStackTrace();
+        }
+      }
     }
   }
 
